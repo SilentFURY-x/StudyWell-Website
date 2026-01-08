@@ -9,14 +9,17 @@ import LoginPage from '@/features/auth/LoginPage';
 import AppLayout from '@/components/layout/AppLayout';
 import Dashboard from '@/features/dashboard/Dashboard';
 
+// --- CHANGE 1: Import the new Timeline Page ---
+import TimelinePage from '@/features/timeline/TimelinePage'; 
+
 function App() {
-  const { user, setUser, isLoading, setLoading, syncUser } = useAuthStore(); // Get syncUser
+  const { user, setUser, isLoading, setLoading, syncUser } = useAuthStore();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
-        await syncUser(currentUser); // <--- Add this line!
+        await syncUser(currentUser);
       } else {
         setUser(null);
       }
@@ -36,22 +39,22 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Public Route: Login */}
         <Route 
           path="/login" 
           element={!user ? <LoginPage /> : <Navigate to="/" replace />} 
         />
 
-        {/* Protected Routes (Wrapped in AppLayout) */}
         {user ? (
           <Route element={<AppLayout />}>
             <Route path="/" element={<Dashboard />} />
-            <Route path="/timeline" element={<div>Timeline Coming Soon</div>} />
+            
+            {/* --- CHANGE 2: Use the real component here --- */}
+            <Route path="/timeline" element={<TimelinePage />} />
+            
             <Route path="/timer" element={<div>Timer Coming Soon</div>} />
             <Route path="/leaderboard" element={<div>Leaderboard Coming Soon</div>} />
           </Route>
         ) : (
-          // Redirect unauthorized users to login
           <Route path="*" element={<Navigate to="/login" replace />} />
         )}
       </Routes>
