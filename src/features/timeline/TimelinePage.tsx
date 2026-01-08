@@ -32,8 +32,15 @@ const TimelinePage = () => {
       <DragDropContext onDragEnd={onDragEnd}>
         
         {/* LEFT COLUMN: Your Subjects (Draggable Source) */}
-        <div className="w-64 flex-shrink-0 flex flex-col gap-4">
-          <Card className="h-full flex flex-col bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm border-zinc-200 dark:border-zinc-800">
+        <div className="w-64 flex-shrink-0 flex flex-col gap-4 relative z-0">
+          
+          {/* 1. BACKGROUND LAYER: Handles the Glass Effect & Border independently */}
+          {/* We put the blur here. Because it's a sibling (not a parent) to the content, it won't break dragging. */}
+          <div className="absolute inset-0 rounded-xl bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm border border-zinc-200 dark:border-zinc-800 -z-10" />
+
+          {/* 2. CONTENT LAYER: The Logical Container */}
+          {/* We strip the styles (bg-transparent, border-0) so it doesn't create a stacking context */}
+          <Card className="h-full flex flex-col bg-transparent border-0 shadow-none">
             <CardHeader>
               <CardTitle className="text-lg">Subjects</CardTitle>
             </CardHeader>
