@@ -1,3 +1,4 @@
+import { TimerWidget } from "../timer/TimerWidget";
 import { useAuthStore } from "@/store/useAuthStore";
 import AddSubjectDialog from "./AddSubjectDialog";
 import SubjectCard from "./SubjectCard";
@@ -10,7 +11,7 @@ export default function Dashboard() {
   const { subjects, loading, deleteSubject } = useSubjects();
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 pb-10">
       {/* Header Section */}
       <div className="flex items-center justify-between">
         <div>
@@ -22,49 +23,72 @@ export default function Dashboard() {
         <AddSubjectDialog />
       </div>
 
-      {/* Main Content Area */}
-      {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="h-32 bg-zinc-100 dark:bg-zinc-800 rounded-xl animate-pulse" />
-          ))}
+      {/* Main Layout: Split into Focus Zone (Timer) & Subject Zone */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        {/* LEFT COLUMN: Focus Timer (Takes 1/3 width on desktop) */}
+        <div className="lg:col-span-1 space-y-6">
+           <TimerWidget />
+           
+           {/* Placeholder for future Stats/Streak widget */}
+           {/* <StreakWidget /> */} 
         </div>
-      ) : (
-        <div className="min-h-[400px]">
-          {subjects.length === 0 ? (
-            // Empty State
-            <motion.div 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }}
-              className="flex flex-col items-center justify-center h-64 border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-xl bg-zinc-50/50 dark:bg-zinc-900/50"
-            >
-              <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-full mb-4">
-                <BookDashed className="w-8 h-8 text-muted-foreground" />
-              </div>
-              <h3 className="text-lg font-semibold">No subjects yet</h3>
-              <p className="text-sm text-muted-foreground max-w-sm text-center mb-4">
-                Add your first subject to start tracking your progress and building your streak.
-              </p>
-              <AddSubjectDialog />
-            </motion.div>
+
+        {/* RIGHT COLUMN: Subjects Grid (Takes 2/3 width on desktop) */}
+        <div className="lg:col-span-2 space-y-6">
+          <div className="flex items-center justify-between">
+             <h2 className="text-xl font-semibold tracking-tight">Your Subjects</h2>
+          </div>
+
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="h-32 bg-zinc-100 dark:bg-zinc-800 rounded-xl animate-pulse" />
+              ))}
+            </div>
           ) : (
-            // Grid of Subjects
-            <motion.div 
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-            >
-              <AnimatePresence>
-                {subjects.map((subject) => (
-                  <SubjectCard 
-                    key={subject.id} 
-                    subject={subject} 
-                    onDelete={deleteSubject} 
-                  />
-                ))}
-              </AnimatePresence>
-            </motion.div>
+            <div className="min-h-[400px]">
+              {subjects.length === 0 ? (
+                // Empty State
+                <motion.div 
+                  initial={{ opacity: 0 }} 
+                  animate={{ opacity: 1 }}
+                  className="flex flex-col items-center justify-center h-64 border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-xl bg-zinc-50/50 dark:bg-zinc-900/50"
+                >
+                  <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-full mb-4">
+                    <BookDashed className="w-8 h-8 text-muted-foreground" />
+                  </div>
+                  <h3 className="text-lg font-semibold">No subjects yet</h3>
+                  <p className="text-sm text-muted-foreground max-w-sm text-center mb-4">
+                    Add your first subject to start tracking your progress and building your streak.
+                  </p>
+                  {/* Reuse the dialog button here for convenience */}
+                  <div className="opacity-50 pointer-events-none">
+                      {/* Visual hint only since the main button is in header */}
+                      {/* <AddSubjectDialog /> */} 
+                  </div>
+                </motion.div>
+              ) : (
+                // Grid of Subjects
+                // Note: Changed lg:grid-cols-3 to lg:grid-cols-2 because the parent container is now smaller (2/3 width)
+                <motion.div 
+                  className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                >
+                  <AnimatePresence>
+                    {subjects.map((subject) => (
+                      <SubjectCard 
+                        key={subject.id} 
+                        subject={subject} 
+                        onDelete={deleteSubject} 
+                      />
+                    ))}
+                  </AnimatePresence>
+                </motion.div>
+              )}
+            </div>
           )}
         </div>
-      )}
+      </div>
     </div>
   );
 }
