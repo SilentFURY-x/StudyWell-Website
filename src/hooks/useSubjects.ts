@@ -19,9 +19,14 @@ export const useSubjects = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!user) return;
+    // If no user is logged in, we shouldn't be loading data
+    if (!user) {
+      setLoading(false);
+      return;
+    }
 
-    // Real-time listener: Updates instantly when data changes
+    setLoading(true);
+
     const q = query(
       collection(db, "subjects"),
       where("userId", "==", user.uid),
@@ -35,7 +40,10 @@ export const useSubjects = () => {
       })) as Subject[];
       
       setSubjects(subjectList);
-      setLoading(false);
+      setLoading(false); // Stop loading as soon as we get data (even if empty)
+    }, (error) => {
+      console.error("Error fetching subjects:", error);
+      setLoading(false); // Stop loading if there's an error
     });
 
     return () => unsubscribe();
@@ -43,6 +51,8 @@ export const useSubjects = () => {
 
   const addSubject = async (name: string, color: string) => {
     if (!user) return;
+    
+    // We await this to ensure the server confirms it before closing the modal
     await addDoc(collection(db, "subjects"), {
       name,
       color,

@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { auth } from "@/lib/firebase";
 import { useAuthStore } from "@/store/useAuthStore";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 const Sidebar = () => {
   const location = useLocation();
@@ -26,12 +27,16 @@ const Sidebar = () => {
   return (
     <div className="h-screen w-64 border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 flex flex-col p-4">
       {/* App Logo */}
-      <div className="flex items-center gap-2 px-2 mb-8">
-        <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-          <span className="text-primary-foreground font-bold">S</span>
+      {/* App Logo & Theme Toggle */}
+    <div className="flex items-center justify-between px-2 mb-8">
+        <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+            <span className="text-primary-foreground font-bold">S</span>
+            </div>
+            <span className="text-xl font-bold tracking-tight">StudyWell</span>
         </div>
-        <span className="text-xl font-bold tracking-tight">StudyWell</span>
-      </div>
+        <ThemeToggle />
+    </div>
 
       {/* Navigation Links */}
       <div className="space-y-1 flex-1">
