@@ -10,15 +10,20 @@ import AppLayout from '@/components/layout/AppLayout';
 import Dashboard from '@/features/dashboard/Dashboard';
 
 function App() {
-  const { user, setUser, isLoading, setLoading } = useAuthStore();
+  const { user, setUser, isLoading, setLoading, syncUser } = useAuthStore(); // Get syncUser
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser) {
+        setUser(currentUser);
+        await syncUser(currentUser); // <--- Add this line!
+      } else {
+        setUser(null);
+      }
       setLoading(false);
     });
     return () => unsubscribe();
-  }, [setUser, setLoading]);
+  }, [setUser, setLoading, syncUser]);
 
   if (isLoading) {
     return (
