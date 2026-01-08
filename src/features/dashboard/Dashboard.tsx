@@ -5,6 +5,7 @@ import SubjectCard from "./SubjectCard";
 import { useSubjects } from "@/hooks/useSubjects";
 import { motion, AnimatePresence } from "framer-motion";
 import { BookDashed } from "lucide-react";
+import { SessionCompleteDialog } from "../timer/SessionCompleteDialog";
 
 export default function Dashboard() {
   const { user } = useAuthStore();
@@ -20,21 +21,19 @@ export default function Dashboard() {
             Welcome back, {user?.displayName?.split(" ")[0]}. Ready to focus?
           </p>
         </div>
+        {/* Top Right Button */}
         <AddSubjectDialog />
       </div>
 
-      {/* Main Layout: Split into Focus Zone (Timer) & Subject Zone */}
+      {/* Main Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        {/* LEFT COLUMN: Focus Timer (Takes 1/3 width on desktop) */}
+        {/* LEFT COLUMN: Focus Timer */}
         <div className="lg:col-span-1 space-y-6">
            <TimerWidget />
-           
-           {/* Placeholder for future Stats/Streak widget */}
-           {/* <StreakWidget /> */} 
         </div>
 
-        {/* RIGHT COLUMN: Subjects Grid (Takes 2/3 width on desktop) */}
+        {/* RIGHT COLUMN: Subjects Grid */}
         <div className="lg:col-span-2 space-y-6">
           <div className="flex items-center justify-between">
              <h2 className="text-xl font-semibold tracking-tight">Your Subjects</h2>
@@ -59,18 +58,16 @@ export default function Dashboard() {
                     <BookDashed className="w-8 h-8 text-muted-foreground" />
                   </div>
                   <h3 className="text-lg font-semibold">No subjects yet</h3>
-                  <p className="text-sm text-muted-foreground max-w-sm text-center mb-4">
+                  <p className="text-sm text-muted-foreground max-w-sm text-center mb-6">
                     Add your first subject to start tracking your progress and building your streak.
                   </p>
-                  {/* Reuse the dialog button here for convenience */}
-                  <div className="opacity-50 pointer-events-none">
-                      {/* Visual hint only since the main button is in header */}
-                      {/* <AddSubjectDialog /> */} 
-                  </div>
+                  
+                  {/* RESTORED: The Center Button */}
+                  <AddSubjectDialog />
+                  
                 </motion.div>
               ) : (
                 // Grid of Subjects
-                // Note: Changed lg:grid-cols-3 to lg:grid-cols-2 because the parent container is now smaller (2/3 width)
                 <motion.div 
                   className="grid grid-cols-1 md:grid-cols-2 gap-6"
                 >
@@ -89,6 +86,9 @@ export default function Dashboard() {
           )}
         </div>
       </div>
+      
+      {/* Confetti Dialog (Hidden until triggered) */}
+      <SessionCompleteDialog />
     </div>
   );
 }

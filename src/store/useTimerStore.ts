@@ -2,19 +2,19 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 interface TimerState {
-  // State
-  timeLeft: number;      // Time remaining in seconds
-  initialTime: number;   // Total time for the session (for progress bar calculation)
-  isRunning: boolean;    // Is the timer ticking?
-  activeSessionId: string | null; // Which timeline session is currently active?
+  timeLeft: number;
+  initialTime: number;
+  isRunning: boolean;
+  activeSessionId: string | null;
+  isCompleted: boolean;
 
-  // Actions
   setTime: (seconds: number) => void;
   startTimer: (sessionId: string, duration: number) => void;
   pauseTimer: () => void;
   resumeTimer: () => void;
   stopTimer: () => void;
-  tick: () => void; // Call this every second
+  resetTimer: () => void;
+  tick: () => void;
 }
 
 export const useTimerStore = create<TimerState>()(
@@ -24,44 +24,61 @@ export const useTimerStore = create<TimerState>()(
       initialTime: 0,
       isRunning: false,
       activeSessionId: null,
+      isCompleted: false,
 
       setTime: (seconds) => set({ timeLeft: seconds, initialTime: seconds }),
 
       startTimer: (sessionId, duration) => {
-        // Only start if not already running for this session
         if (get().activeSessionId === sessionId && get().isRunning) return;
-        
         set({ 
           isRunning: true, 
           activeSessionId: sessionId, 
           timeLeft: duration,
-          initialTime: duration 
+          initialTime: duration,
+          isCompleted: false 
         });
       },
 
       pauseTimer: () => set({ isRunning: false }),
-      
       resumeTimer: () => set({ isRunning: true }),
 
       stopTimer: () => set({ 
         isRunning: false, 
         timeLeft: 0, 
-        activeSessionId: null 
+        activeSessionId: null,
+        isCompleted: false 
       }),
 
+      resetTimer: () => set({
+        timeLeft: 0,
+        initialTime: 0,
+        isRunning: false,
+        activeSessionId: null,
+        isCompleted: false
+      }),
+
+      // --- THE FIXED LOGIC ---
       tick: () => {
         const { timeLeft, isRunning } = get();
-        if (isRunning && timeLeft > 0) {
+        
+        if (!isRunning) return;
+
+        if (timeLeft > 1) {
+          // Normal tick
           set({ timeLeft: timeLeft - 1 });
-        } else if (isRunning && timeLeft === 0) {
-          // Timer finished!
-          set({ isRunning: false, activeSessionId: null });
-          // We will trigger "Session Completed" modal here later
+        } else {
+          // We are at 1 second. The next tick makes it 0.
+          // FINISH IMMEDIATELY.
+          set({ 
+            timeLeft: 0, 
+            isRunning: false, // Stop the clock
+            isCompleted: true // Trigger the confetti!
+          });
         }
       },
     }),
     {
-      name: 'study-timer-storage', // Keep timer alive even if they refresh the page
+      name: 'study-timer-storage',
     }
   )
 );

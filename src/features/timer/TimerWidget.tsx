@@ -24,16 +24,17 @@ export const TimerWidget = () => {
   // 2. The Ticking Mechanism (The Heartbeat)
   useEffect(() => {
     let interval: NodeJS.Timeout;
+    
     if (isRunning && timeLeft > 0) {
       interval = setInterval(() => {
         tick(); // Subtract 1 second
       }, 1000);
-    } else if (timeLeft === 0) {
-      // Timer finished (Phase 7: We will trigger sound/XP here)
-      stopTimer(); 
-    }
+    } 
+    // FIX: Removed the 'else if (timeLeft === 0) stopTimer()' block.
+    // We let the Store's tick() function handle the finish line automatically.
+    
     return () => clearInterval(interval);
-  }, [isRunning, timeLeft, tick, stopTimer]);
+  }, [isRunning, timeLeft, tick]);
 
   // 3. Helper: Format seconds into MM:SS
   const formatTime = (seconds: number) => {
@@ -54,7 +55,7 @@ export const TimerWidget = () => {
         startTimer(currentSlot.sessionId, 60 * 60); 
     } else {
         // Free Study Mode (Default 25 min)
-        startTimer("free-study", 25 * 60);
+        startTimer("free-study", 5);
     }
   };
 
