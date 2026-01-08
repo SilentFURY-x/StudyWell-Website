@@ -14,14 +14,27 @@ const TimelinePage = () => {
   const { sessions, addSession, removeSession } = useTimeline();
 
   const onDragEnd = (result: DropResult) => {
-    const { source, destination, draggableId } = result;
+    const { destination, draggableId } = result;
 
     // Dropped outside a valid slot? Do nothing.
     if (!destination) return;
 
-    // If dropped in a timeline slot (droppableId will be the "hour")
+    // If dropped in a timeline slot
     if (destination.droppableId !== "subjects") {
       const hour = parseInt(destination.droppableId);
+
+      // 1. Check for collision: Is there already a session here?
+      const existingSession = sessions.find((s) => {
+        const sessionHour = new Date(s.startTime).getHours();
+        return sessionHour === hour;
+      });
+
+      // 2. If yes, REMOVE the old one first (Replacement Logic)
+      if (existingSession) {
+        removeSession(existingSession.id);
+      }
+
+      // 3. Add the new session
       addSession(draggableId, hour);
     }
   };
@@ -109,16 +122,29 @@ const TimelinePage = () => {
                         ref={provided.innerRef}
                         {...provided.droppableProps}
                         className={cn(
-                          "flex-1 min-h-[60px] rounded-xl border border-dashed transition-colors relative",
-                          snapshot.isDraggingOver ? "bg-primary/5 border-primary" : "border-zinc-200 dark:border-zinc-800",
-                          sessionSubject ? "border-solid bg-white dark:bg-zinc-900" : "bg-transparent"
+                          "flex-1 min-h-[60px] rounded-xl border border-dashed transition-all relative overflow-hidden",
+                          // Visual Feedback: If dragging over, light up the background
+                          snapshot.isDraggingOver 
+                            ? "bg-primary/10 border-primary ring-2 ring-primary/20" 
+                            : "border-zinc-200 dark:border-zinc-800",
+                          // If occupied but NOT being hovered, show solid background
+                          sessionSubject && !snapshot.isDraggingOver 
+                            ? "border-solid bg-white dark:bg-zinc-900" 
+                            : "bg-transparent"
                         )}
                       >
                         {/* If a session exists here, show it */}
                         {session && sessionSubject ? (
                           <div 
-                            className="absolute inset-0 m-1 rounded-lg flex items-center justify-between px-4"
-                            style={{ backgroundColor: `${sessionSubject.color}20`, borderLeft: `4px solid ${sessionSubject.color}` }}
+                            className={cn(
+                              "absolute inset-0 m-1 rounded-lg flex items-center justify-between px-4 transition-opacity duration-200",
+                              // THE FIX: If dragging a NEW card over this one, fade this one out!
+                              snapshot.isDraggingOver ? "opacity-30 scale-95 grayscale" : "opacity-100"
+                            )}
+                            style={{ 
+                                backgroundColor: `${sessionSubject.color}20`, 
+                                borderLeft: `4px solid ${sessionSubject.color}` 
+                            }}
                           >
                             <span className="font-semibold" style={{ color: sessionSubject.color }}>
                               {sessionSubject.name}
@@ -127,17 +153,17 @@ const TimelinePage = () => {
                               size="icon" 
                               variant="ghost" 
                               className="h-8 w-8 hover:bg-red-100 hover:text-red-600 dark:hover:bg-red-900/30"
+                              // Stop propagation so clicking delete doesn't trigger drag weirdness
+                              onMouseDown={(e) => e.stopPropagation()} 
                               onClick={() => removeSession(session.id)}
                             >
                               <Trash2 className="w-4 h-4" />
                             </Button>
                           </div>
                         ) : (
-                          // If empty, hidden placeholder
                           <div className="h-full w-full" />
                         )}
                         
-                        {/* We hide the placeholder because we don't want the item to "stay" inside visually in standard dnd way */}
                         <div className="hidden">{provided.placeholder}</div>
                       </div>
                     )}
