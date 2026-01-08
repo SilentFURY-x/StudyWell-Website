@@ -1,30 +1,45 @@
-import { Button } from "@/components/ui/button"
+import { useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
+import { useAuthStore } from '@/store/useAuthStore';
+import LoginPage from '@/features/auth/LoginPage';
 
 function App() {
-  return (
-    // This div uses your theme's background color
-    <div className="flex h-screen w-full flex-col items-center justify-center bg-background p-4">
-      
-      <div className="text-center space-y-4 max-w-md">
-        {/* 'text-primary' tests your text color variable */}
-        <h1 className="text-4xl font-bold tracking-tight text-primary">
-          StudyWell
-        </h1>
-        
-        {/* 'text-muted-foreground' tests the subtle gray zinc color */}
-        <p className="text-muted-foreground">
-          The ultimate study companion. Phase 1 is complete.
-        </p>
-        
-        <div className="flex justify-center gap-4">
-           {/* This is the component you just installed */}
-           <Button>Login</Button>
-           <Button variant="secondary">Learn More</Button>
-        </div>
-      </div>
+  const { user, setUser, isLoading, setLoading } = useAuthStore();
 
-    </div>
-  )
+  // Listen for login state changes (The "Lock" logic)
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, [setUser, setLoading]);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen w-full bg-background">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  return (
+    <BrowserRouter>
+      <Routes>
+        {/* If user is NOT logged in, show Login Page */}
+        {/* If user IS logged in, we will eventually show Dashboard (placeholder for now) */}
+        <Route 
+          path="/" 
+          element={!user ? <LoginPage /> : <div className="p-10 text-center text-2xl">Dashboard Coming Soon! (Logged in as {user.displayName})</div>} 
+        />
+        
+        {/* Catch-all redirect */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
