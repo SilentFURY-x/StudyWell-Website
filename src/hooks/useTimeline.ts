@@ -19,15 +19,24 @@ export const useTimeline = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
 
-    // Get start and end of TODAY (so we only show today's schedule)
+    setLoading(true);
+
+    // Get start and end of TODAY
     const todayStart = startOfDay(new Date()).getTime();
     const todayEnd = endOfDay(new Date()).getTime();
 
+    // FIX 1: Point to the USER'S sub-collection
+    const sessionsRef = collection(db, "users", user.uid, "sessions");
+
+    // FIX 2: We don't need 'where("userId"...) because the path is already specific.
+    // This makes the query simpler and avoids "Index Missing" errors.
     const q = query(
-      collection(db, "sessions"),
-      where("userId", "==", user.uid),
+      sessionsRef,
       where("startTime", ">=", todayStart),
       where("startTime", "<=", todayEnd)
     );
@@ -38,6 +47,9 @@ export const useTimeline = () => {
         ...doc.data(),
       })) as StudySession[];
       setSessions(sessionList);
+      setLoading(false);
+    }, (error) => {
+      console.error("Error fetching timeline:", error);
       setLoading(false);
     });
 
@@ -52,21 +64,35 @@ export const useTimeline = () => {
     date.setHours(hour, 0, 0, 0);
     const startTime = date.getTime();
     
-    // Default duration: 1 hour (60 mins * 60 secs * 1000 ms)
+    // Default duration: 1 hour
     const endTime = startTime + (60 * 60 * 1000);
 
-    await addDoc(collection(db, "sessions"), {
-      userId: user.uid,
-      subjectId,
-      startTime,
-      endTime,
-      durationMinutes: 60,
-      createdAt: Date.now()
-    });
+    try {
+        // FIX 3: Add to the USER'S sub-collection
+        const sessionsRef = collection(db, "users", user.uid, "sessions");
+
+        await addDoc(sessionsRef, {
+            userId: user.uid,
+            subjectId,
+            startTime,
+            endTime,
+            durationMinutes: 60,
+            createdAt: Date.now()
+        });
+    } catch (error) {
+        console.error("Error adding session:", error);
+    }
   };
 
   const removeSession = async (sessionId: string) => {
-    await deleteDoc(doc(db, "sessions", sessionId));
+    if (!user) return;
+    try {
+        // FIX 4: Delete from the USER'S sub-collection
+        const sessionRef = doc(db, "users", user.uid, "sessions", sessionId);
+        await deleteDoc(sessionRef);
+    } catch (error) {
+        console.error("Error removing session:", error);
+    }
   };
 
   return { sessions, loading, addSession, removeSession };

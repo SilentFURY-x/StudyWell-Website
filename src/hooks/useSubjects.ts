@@ -3,11 +3,11 @@ import {
   collection, 
   addDoc, 
   query, 
-  where, 
   onSnapshot, 
   orderBy,
   deleteDoc,
-  doc 
+  doc,
+  serverTimestamp 
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -19,19 +19,20 @@ export const useSubjects = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // If no user is logged in, we shouldn't be loading data
     if (!user) {
+      setSubjects([]);
       setLoading(false);
       return;
     }
 
     setLoading(true);
 
-    const q = query(
-      collection(db, "subjects"),
-      where("userId", "==", user.uid),
-      orderBy("createdAt", "desc")
-    );
+    // FIX 1: Point to the USER'S sub-collection, not the root
+    const subjectsRef = collection(db, "users", user.uid, "subjects");
+    
+    // FIX 2: No need for 'where' clause anymore (path already handles it)
+    // This avoids the "Missing Index" error
+    const q = query(subjectsRef, orderBy("createdAt", "desc"));
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const subjectList = snapshot.docs.map((doc) => ({
@@ -40,10 +41,10 @@ export const useSubjects = () => {
       })) as Subject[];
       
       setSubjects(subjectList);
-      setLoading(false); // Stop loading as soon as we get data (even if empty)
+      setLoading(false);
     }, (error) => {
       console.error("Error fetching subjects:", error);
-      setLoading(false); // Stop loading if there's an error
+      setLoading(false);
     });
 
     return () => unsubscribe();
@@ -52,17 +53,29 @@ export const useSubjects = () => {
   const addSubject = async (name: string, color: string) => {
     if (!user) return;
     
-    // We await this to ensure the server confirms it before closing the modal
-    await addDoc(collection(db, "subjects"), {
-      name,
-      color,
-      userId: user.uid,
-      createdAt: Date.now(),
-    });
+    try {
+        // FIX 3: Write to the same sub-collection path
+        const subjectsRef = collection(db, "users", user.uid, "subjects");
+        
+        await addDoc(subjectsRef, {
+            name,
+            color,
+            userId: user.uid,
+            createdAt: serverTimestamp(), // Better than Date.now() for sync
+        });
+    } catch (error) {
+        console.error("Error adding subject:", error);
+    }
   };
 
   const deleteSubject = async (id: string) => {
-    await deleteDoc(doc(db, "subjects", id));
+    if (!user) return;
+    try {
+        // FIX 4: Delete from the correct sub-collection path
+        await deleteDoc(doc(db, "users", user.uid, "subjects", id));
+    } catch (error) {
+        console.error("Error deleting subject:", error);
+    }
   };
 
   return { subjects, loading, addSubject, deleteSubject };

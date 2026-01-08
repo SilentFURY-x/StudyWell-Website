@@ -3,15 +3,19 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Plus } from "lucide-react";
+import { Plus, Loader2 } from "lucide-react";
 import { useSubjects } from "@/hooks/useSubjects";
-import { SUBJECT_COLORS } from "@/types";
+import { SUBJECT_COLORS } from "@/types"; // ✅ Imports your specific colors
 import { cn } from "@/lib/utils";
 
 const AddSubjectDialog = () => {
-  const [open, setOpen] = useState(false); // We control this state 100% now
+  // 1. Internal State: The dialog controls itself now.
+  const [open, setOpen] = useState(false);
+  
   const [name, setName] = useState("");
+  // Default to the first color in your list (Zinc)
   const [selectedColor, setSelectedColor] = useState(SUBJECT_COLORS[0].value);
+  
   const { addSubject } = useSubjects();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -23,7 +27,7 @@ const AddSubjectDialog = () => {
     try {
       await addSubject(name, selectedColor);
       
-      // Reset and Close ONLY after success
+      // Reset form and close dialog on success
       setName("");
       setSelectedColor(SUBJECT_COLORS[0].value);
       setOpen(false); 
@@ -36,19 +40,21 @@ const AddSubjectDialog = () => {
 
   return (
     <>
-      {/* 1. The Button is now OUTSIDE the Dialog component */}
+      {/* 2. The Trigger Button: Clicking this directly sets 'open' to true */}
       <Button onClick={() => setOpen(true)} className="gap-2">
         <Plus className="w-4 h-4" /> Add Subject
       </Button>
 
-      {/* 2. The Dialog is controlled purely by the 'open' prop */}
+      {/* 3. The Dialog Window */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Add New Subject</DialogTitle>
           </DialogHeader>
+          
           <form onSubmit={handleSubmit} className="grid gap-6 py-4">
             
+            {/* Name Input */}
             <div className="grid gap-2">
               <Label htmlFor="name">Subject Name</Label>
               <Input
@@ -61,6 +67,7 @@ const AddSubjectDialog = () => {
               />
             </div>
 
+            {/* Color Picker Grid */}
             <div className="grid gap-2">
               <Label>Color Code</Label>
               <div className="flex flex-wrap gap-2">
@@ -72,7 +79,7 @@ const AddSubjectDialog = () => {
                     className={cn(
                       "w-8 h-8 rounded-full border-2 transition-all",
                       selectedColor === color.value 
-                        ? "border-primary scale-110 shadow-md" 
+                        ? "border-primary scale-110 shadow-md ring-2 ring-offset-2 ring-primary/30" 
                         : "border-transparent hover:border-zinc-300"
                     )}
                     style={{ backgroundColor: color.value }}
@@ -82,6 +89,7 @@ const AddSubjectDialog = () => {
               </div>
             </div>
 
+            {/* Actions */}
             <div className="flex justify-end gap-3 mt-4">
               <Button 
                 type="button" 
@@ -92,6 +100,7 @@ const AddSubjectDialog = () => {
                 Cancel
               </Button>
               <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {isSubmitting ? "Creating..." : "Create Subject"}
               </Button>
             </div>
