@@ -3,12 +3,15 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { useAuthStore } from '@/store/useAuthStore';
+
+// Pages & Components
 import LoginPage from '@/features/auth/LoginPage';
+import AppLayout from '@/components/layout/AppLayout';
+import Dashboard from '@/features/dashboard/Dashboard';
 
 function App() {
   const { user, setUser, isLoading, setLoading } = useAuthStore();
 
-  // Listen for login state changes (The "Lock" logic)
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -28,15 +31,24 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* If user is NOT logged in, show Login Page */}
-        {/* If user IS logged in, we will eventually show Dashboard (placeholder for now) */}
+        {/* Public Route: Login */}
         <Route 
-          path="/" 
-          element={!user ? <LoginPage /> : <div className="p-10 text-center text-2xl">Dashboard Coming Soon! (Logged in as {user.displayName})</div>} 
+          path="/login" 
+          element={!user ? <LoginPage /> : <Navigate to="/" replace />} 
         />
-        
-        {/* Catch-all redirect */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+
+        {/* Protected Routes (Wrapped in AppLayout) */}
+        {user ? (
+          <Route element={<AppLayout />}>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/timeline" element={<div>Timeline Coming Soon</div>} />
+            <Route path="/timer" element={<div>Timer Coming Soon</div>} />
+            <Route path="/leaderboard" element={<div>Leaderboard Coming Soon</div>} />
+          </Route>
+        ) : (
+          // Redirect unauthorized users to login
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        )}
       </Routes>
     </BrowserRouter>
   );
