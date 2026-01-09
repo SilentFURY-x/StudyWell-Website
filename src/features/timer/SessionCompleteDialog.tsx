@@ -1,5 +1,6 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useTimerStore } from "@/store/useTimerStore";
+import { useAuthStore } from "@/store/useAuthStore"; // <--- 1. Import Auth Store
 import {
   Dialog,
   DialogContent,
@@ -9,19 +10,20 @@ import {
   DialogDescription
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Trophy, Star } from "lucide-react";
+import { Trophy, Star, Loader2 } from "lucide-react";
 import confetti from "canvas-confetti";
 import { motion } from "framer-motion";
 
 export const SessionCompleteDialog = () => {
   const { isCompleted, initialTime, resetTimer } = useTimerStore();
+  const { updateUserStats } = useAuthStore(); // <--- 2. Get the save function
+  const [isSaving, setIsSaving] = useState(false);
 
-  // 1. Calculate Rewards (Basic Logic)
-  // 1 minute = 10 XP
-  const minutesFocused = Math.floor(initialTime / 60);
+  // --- XP CALCULATION (Updated for 5-sec test) ---
+  // If time is less than 60s, we round up to 1 minute so you get at least 10 XP.
+  const minutesFocused = Math.max(1, Math.floor(initialTime / 60));
   const xpEarned = minutesFocused * 10; 
 
-  // 2. The Confetti Explosion Logic
   const triggerConfetti = () => {
     const duration = 3 * 1000;
     const animationEnd = Date.now() + duration;
@@ -40,35 +42,34 @@ export const SessionCompleteDialog = () => {
 
       const particleCount = 50 * (timeLeft / duration);
       
-      // Cannon 1 (Left Side)
-      confetti({
-        ...defaults, 
-        particleCount,
-        origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
-      });
-      
-      // Cannon 2 (Right Side)
-      confetti({
-        ...defaults, 
-        particleCount,
-        origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
-      });
+      confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
+      confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
     }, 250);
   };
 
-  // 3. Trigger when dialog opens
   useEffect(() => {
     if (isCompleted) {
         triggerConfetti();
     }
   }, [isCompleted]);
 
+  // --- 3. HANDLE CLAIM (Connects to Firebase) ---
+  const handleClaim = async () => {
+    setIsSaving(true);
+    
+    // We send 'minutesFocused * 60' to ensure the store sees at least 60 seconds
+    // This allows your 5-second test to save as 10 XP.
+    await updateUserStats(minutesFocused * 60); 
+    
+    setIsSaving(false);
+    resetTimer(); 
+  };
+
   return (
-    <Dialog open={isCompleted} onOpenChange={(open) => !open && resetTimer()}>
+    <Dialog open={isCompleted} onOpenChange={(open) => !open && handleClaim()}>
       <DialogContent className="sm:max-w-md text-center border-0 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xl shadow-2xl">
         <DialogHeader className="flex flex-col items-center gap-4">
             
-            {/* Animated Trophy Icon */}
             <motion.div 
                 initial={{ scale: 0, rotate: -180 }}
                 animate={{ scale: 1, rotate: 0 }}
@@ -86,11 +87,10 @@ export const SessionCompleteDialog = () => {
           </DialogDescription>
         </DialogHeader>
 
-        {/* Reward Card */}
         <motion.div 
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.2 }} // <--- FIXED: Moved delay inside transition
+            transition={{ delay: 0.2 }}
             className="bg-zinc-50 dark:bg-zinc-800/50 p-6 rounded-xl border border-dashed border-zinc-200 dark:border-zinc-700 my-2"
         >
             <div className="flex flex-col items-center gap-2">
@@ -106,12 +106,20 @@ export const SessionCompleteDialog = () => {
           <Button 
             size="lg" 
             className="w-full sm:w-auto font-bold text-md px-8 shadow-lg shadow-primary/20"
-            onClick={resetTimer}
+            onClick={handleClaim} // <--- 4. Connected to Logic
+            disabled={isSaving}
           >
-            Claim Rewards
+            {isSaving ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> 
+                  Saving...
+                </>
+            ) : (
+                "Claim Rewards"
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
-}; 
+};
