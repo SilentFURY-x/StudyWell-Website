@@ -47,7 +47,7 @@ Featuring a **drag-and-drop timeline**, **real-time focus timer**, and a **compe
 
 | **The Command Center** | **Smart Timeline** |
 |:---:|:---:|
-| <img src="docs/dashboard-light.png" alt="Dashboard" width="400"/> | <img src="docs/timeline-dark.png" alt="Timeline" width="400"/> |
+| <img src="docs/dashboard-light.png" alt="Dashboard" width="400"/> | <img src="docs/timeline.png" alt="Timeline" width="400"/> |
 | *Intuitive Dashboard with integrated Focus Timer* | *Drag & Drop scheduling with Real-time "Soul Time Line* |
 
 | **Gamified Leaderboard** | **Deep Analytics** |
@@ -59,6 +59,11 @@ Featuring a **drag-and-drop timeline**, **real-time focus timer**, and a **compe
 |:---:|:---:|
 | <img src="docs/streak.png" alt="Streak Message" width="400"/> | <img src="docs/reminder.png" alt="Reminder Notification" width="400"/> |
 | *Show your Consistency* | *Never miss a study session* |
+
+| **Dark Mode** |
+|:---:|
+| <img src="docs/dark.png" alt="Dark Mode" width="400"/> |
+| *For the Nocturnal* |
 
 ---
 
