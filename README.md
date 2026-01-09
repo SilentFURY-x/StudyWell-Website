@@ -48,7 +48,7 @@ Featuring a **drag-and-drop timeline**, **real-time focus timer**, and a **compe
 | **The Command Center** | **Smart Timeline** |
 |:---:|:---:|
 | <img src="docs/dashboard-light.png" alt="Dashboard" width="400"/> | <img src="docs/timeline-dark.png" alt="Timeline" width="400"/> |
-| *Intuitive Dashboard with integrated Focus Timer* | *Drag & Drop scheduling with Real-time "Soul Sucker" Line* |
+| *Intuitive Dashboard with integrated Focus Timer* | *Drag & Drop scheduling with Real-time "Soul Time Line* |
 
 | **Gamified Leaderboard** | **Deep Analytics** |
 |:---:|:---:|
@@ -160,7 +160,7 @@ Follow these steps to run StudyWell locally on your machine.
 
 * [x] Gamification: XP, Leaderboards, Streaks
 
-* [ ] Edit Subject & Remarks/Difficulty
+* [ ] Feature: Edit Subject & Remarks/Difficulty
 
 * [ ] Phase 2: Study Groups & Multiplayer Pomodoro
 
