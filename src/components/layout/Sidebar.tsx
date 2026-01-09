@@ -8,10 +8,8 @@ import {
   Trophy, 
   LogOut, 
   Flame,
-  Clock,
   Star,
-  BarChart3, 
-  Settings, 
+  BarChart3,  
   User, 
   ChevronUp,
   Sparkles 

@@ -111,7 +111,7 @@ export default function AnalyticsPage() {
                             />
                             <Tooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
                             <Bar dataKey="minutes" radius={[4, 4, 0, 0]} maxBarSize={60}>
-                                {data.map((entry, index) => (
+                                {data.map((_, index) => (
                                     <Cell key={`cell-${index}`} fill="currentColor" className="text-primary hover:text-primary/80 transition-colors" />
                                 ))}
                             </Bar>
