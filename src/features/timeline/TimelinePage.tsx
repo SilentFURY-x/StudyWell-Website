@@ -5,23 +5,24 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Trash2, GripVertical } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { AnimatePresence, motion } from "framer-motion"; //
+import { AnimatePresence, motion } from "framer-motion"; 
+import CurrentTimeLine from "./CurrentTimeLine"; 
 
-// Generate hours from 6 AM to 11 PM
 const HOURS = Array.from({ length: 18 }, (_, i) => i + 6); 
 
 const TimelinePage = () => {
   const { subjects } = useSubjects();
   const { sessions, addSession, removeSession } = useTimeline();
+  
+  // ✅ 1. Get current hour again so we know where to place the line
+  const currentHour = new Date().getHours();
 
   const onDragEnd = (result: DropResult) => {
     const { destination, draggableId } = result;
-
     if (!destination) return;
 
     if (destination.droppableId !== "subjects") {
       const hour = parseInt(destination.droppableId);
-
       const existingSession = sessions.find((s) => {
         const sessionHour = new Date(s.startTime).getHours();
         return sessionHour === hour;
@@ -30,24 +31,23 @@ const TimelinePage = () => {
       if (existingSession) {
         removeSession(existingSession.id);
       }
-
       addSession(draggableId, hour);
     }
   };
 
   return (
-    <div className="h-[calc(100vh-2rem)] flex gap-6 overflow-hidden">
+    <div className="h-[calc(100vh-6rem)] flex gap-6 overflow-hidden">
       
       <DragDropContext onDragEnd={onDragEnd}>
         
-        {/* LEFT COLUMN: Your Subjects */}
-        <div className="w-64 flex-shrink-0 flex flex-col gap-4 relative z-0">
+        {/* LEFT COLUMN: Subjects */}
+        <div className="w-64 flex-shrink-0 flex flex-col gap-4 relative z-10">
           <div className="absolute inset-0 rounded-xl bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm border border-zinc-200 dark:border-zinc-800 -z-10" />
           <Card className="h-full flex flex-col bg-transparent border-0 shadow-none">
             <CardHeader>
               <CardTitle className="text-lg">Subjects</CardTitle>
             </CardHeader>
-            <CardContent className="flex-1 overflow-y-auto">
+            <CardContent className="flex-1 overflow-y-auto overflow-x-hidden pr-2">
               <Droppable droppableId="subjects" isDropDisabled={true}>
                 {(provided) => (
                   <div ref={provided.innerRef} {...provided.droppableProps} className="space-y-3">
@@ -82,10 +82,12 @@ const TimelinePage = () => {
         </div>
 
         {/* RIGHT COLUMN: The Timeline */}
-        <div className="flex-1 overflow-y-auto pr-2">
-          <div className="space-y-4 pb-20">
-            <h2 className="text-2xl font-bold tracking-tight mb-6">Today's Schedule</h2>
-            
+        <div className="flex-1 overflow-y-auto pr-2 pl-4">
+          <h2 className="text-2xl font-bold tracking-tight mb-6">Today's Schedule</h2>
+          
+          <div className="relative space-y-4 pb-20">
+            {/* Removed the Global Line from here */}
+
             {HOURS.map((hour) => {
               const session = sessions.find(s => {
                 const sessionHour = new Date(s.startTime).getHours();
@@ -95,10 +97,12 @@ const TimelinePage = () => {
               const sessionSubject = session 
                 ? subjects.find(sub => sub.id === session.subjectId) 
                 : null;
+              
+              const isCurrentHour = hour === currentHour;
 
               return (
                 <div key={hour} className="flex gap-4 group">
-                  <div className="w-16 pt-2 text-right text-sm font-medium text-muted-foreground">
+                  <div className="w-16 pt-2 text-right text-sm font-medium text-muted-foreground z-10 relative">
                     {hour}:00
                   </div>
 
@@ -108,22 +112,23 @@ const TimelinePage = () => {
                         ref={provided.innerRef}
                         {...provided.droppableProps}
                         className={cn(
-                          "flex-1 min-h-[60px] rounded-xl border border-dashed transition-all relative overflow-hidden",
+                          "flex-1 min-h-[60px] rounded-xl border border-dashed transition-all relative", // ✅ REMOVED overflow-hidden
                           snapshot.isDraggingOver 
                             ? "bg-primary/5 border-primary" 
                             : "border-zinc-200 dark:border-zinc-800",
-                          // Only show solid background if session exists AND we aren't hovering with a new one
                           sessionSubject && !snapshot.isDraggingOver 
                             ? "border-solid bg-white dark:bg-zinc-900" 
                             : "bg-transparent"
                         )}
                       >
-                        {/* ANIMATION WRAPPER START */}
+                        {/* ✅ 2. The Line is back inside, so physics are perfect */}
+                        {isCurrentHour && <CurrentTimeLine />}
+
                         <AnimatePresence mode="wait">
                           {session && sessionSubject && (
                             <motion.div 
-                              key={session.id} // Unique key is required for exit animation
-                              layout // smooth layout adjustments
+                              key={session.id} 
+                              layout 
                               initial={{ opacity: 0, scale: 0.8, filter: "blur(10px)" }}
                               animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
                               exit={{ 
@@ -132,9 +137,7 @@ const TimelinePage = () => {
                                 filter: "blur(10px)",
                                 transition: { duration: 0.2 } 
                               }}
-                              className={cn(
-                                "absolute inset-0 m-1 rounded-lg flex items-center justify-between px-4 transition-colors"
-                              )}
+                              className="absolute inset-0 m-1 rounded-lg flex items-center justify-between px-4 transition-colors"
                               style={{ 
                                 backgroundColor: `${sessionSubject.color}20`, 
                                 borderLeft: `4px solid ${sessionSubject.color}` 
@@ -155,11 +158,8 @@ const TimelinePage = () => {
                             </motion.div>
                           )}
                         </AnimatePresence>
-                        {/* ANIMATION WRAPPER END */}
 
-                        {/* If no session, render transparent placeholder */}
                         {!session && <div className="h-full w-full" />}
-                        
                         <div className="hidden">{provided.placeholder}</div>
                       </div>
                     )}
