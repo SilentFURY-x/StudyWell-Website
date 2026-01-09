@@ -1,4 +1,4 @@
-import { useLeaderboard } from "@/hooks/useLeaderboard";
+import { useLeaderboard, LeaderboardUser } from "@/hooks/useLeaderboard";
 import { useAuthStore } from "@/store/useAuthStore";
 import { motion } from "framer-motion";
 import { Trophy, Medal, Crown, Shield } from "lucide-react";
@@ -8,6 +8,13 @@ import { cn } from "@/lib/utils";
 export default function LeaderboardPage() {
   const { users, loading } = useLeaderboard();
   const { user: currentUser } = useAuthStore();
+
+  // --- NEW: Helper to generate "Aesthetic" avatars ---
+  const getAvatar = (user: LeaderboardUser) => {
+    if (user.photoURL) return user.photoURL;
+    // Uses the user's ID as a seed to create a unique, consistent avatar
+    return `https://api.dicebear.com/9.x/notionists/svg?seed=${user.displayName || user.id}&backgroundColor=e5e7eb,fdba74,fde047`;
+  };
 
   // Animation variants for the staggered list
   const container = {
@@ -104,7 +111,7 @@ export default function LeaderboardPage() {
                                     index === 1 ? "border-zinc-300" :
                                     index === 2 ? "border-orange-400" : "border-transparent"
                                 )}>
-                                    <AvatarImage src={user.photoURL} />
+                                    <AvatarImage src={getAvatar(user)} />
                                     <AvatarFallback>{user.displayName?.[0]}</AvatarFallback>
                                 </Avatar>
                                 
