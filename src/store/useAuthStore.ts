@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { User } from 'firebase/auth';
+import { User, updateProfile } from 'firebase/auth'; // Added updateProfile
 import { 
   doc, 
   getDoc, 
@@ -27,7 +27,8 @@ interface AuthState {
   setLoading: (isLoading: boolean) => void;
   syncUser: (user: User) => Promise<void>;
   updateUserStats: (seconds: number) => Promise<void>;
-  logout: () => void; // Added logout helper
+  updateUserProfile: (name: string, photoURL: string) => Promise<void>; // ✅ NEW
+  logout: () => void;
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
@@ -74,6 +75,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       await updateDoc(userRef, { 
         lastLogin: serverTimestamp(),
         streak: newStreak,
+        // Sync auth profile changes to firestore
         displayName: user.displayName,
         photoURL: user.photoURL
       });
@@ -88,15 +90,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
     const minutes = Math.floor(seconds / 60);
     const xpEarned = minutes * 10; 
-    
-    // YYYY-MM-DD string for the document ID
     const todayStr = new Date().toISOString().split('T')[0]; 
 
     const userRef = doc(db, "users", user.uid);
     const dailyStatRef = doc(db, "users", user.uid, "stats", todayStr);
 
     try {
-      // 1. Global Stats
       await updateDoc(userRef, {
         xp: increment(xpEarned),
         points: increment(xpEarned),
@@ -104,8 +103,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         lastActive: serverTimestamp()
       });
 
-      // 2. ✅ NEW: Daily Stats (For the Chart)
-      // We use setDoc with merge:true so it creates it if it doesn't exist, or updates it if it does.
       await setDoc(dailyStatRef, {
         date: todayStr,
         minutes: increment(minutes),
@@ -123,6 +120,34 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       }
     } catch (err) {
       console.error("Failed to save stats:", err);
+    }
+  },
+
+  // ✅ NEW: Handle Profile Updates
+  updateUserProfile: async (name: string, photoURL: string) => {
+    const { user } = get();
+    if (!user) return;
+
+    try {
+        // 1. Update Firebase Auth (The Core User)
+        await updateProfile(user, {
+            displayName: name,
+            photoURL: photoURL
+        });
+
+        // 2. Update Firestore (The Public Profile)
+        const userRef = doc(db, "users", user.uid);
+        await updateDoc(userRef, {
+            displayName: name,
+            photoURL: photoURL
+        });
+
+        // 3. Force Local State Update
+        set({ user: { ...user, displayName: name, photoURL: photoURL } });
+        
+    } catch (error) {
+        console.error("Failed to update profile:", error);
+        throw error;
     }
   }
 }));
