@@ -156,6 +156,8 @@ Follow these steps to run StudyWell locally on your machine.
 
 * [x] Gamification: XP, Leaderboards, Streaks
 
+* [ ] Edit Subject & Remarks/Difficulty
+
 * [ ] Phase 2: Study Groups & Multiplayer Pomodoro
 
 * [ ] Phase 3: AI-generated Study Plans
