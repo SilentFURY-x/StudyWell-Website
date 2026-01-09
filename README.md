@@ -14,7 +14,7 @@
   </p>
 
   <p align="center">
-    <a href="https://studywell-fury.vercel.app"><strong>View Live Demo »</strong></a>
+    <a href="https://studywell-fury.vercel.app" target="_blank"><strong>View Live Demo »</strong></a>
     <br />
     <br />
     <a href="https://github.com/SilentFURY-x/StudyWell/issues">Report Bug</a>
@@ -100,16 +100,20 @@ A quick look at the top-level files and directories you'll see in this project.
 ```text
 StudyWell/
 ├── src/
-│   ├── components/      # Reusable UI components (Buttons, Cards, Dialogs)
-│   ├── features/        # Feature-based modules (Dashboard, Timeline, Analytics)
+│   ├── assets/          # Static assets (images, global styles)
+│   ├── components/      # Reusable UI components (Buttons, Cards, Layouts)
+│   ├── features/        # Feature-based modules (Dashboard, Timer, Analytics)
 │   ├── hooks/           # Custom React hooks (useAuth, useTimer, useTimeline)
 │   ├── lib/             # Utilities and Firebase configuration
 │   ├── store/           # Global State Management (Zustand stores)
+│   ├── types/           # TypeScript type definitions
 │   ├── App.tsx          # Main application entry point
-│   └── main.tsx         # DOM rendering
-├── public/              # Static assets and icons
-├── .env                 # Environment variables (Firebase keys)
-└── tailwind.config.js   # Style configurations
+│   └── main.tsx         # DOM rendering and providers
+├── public/              # Public static files
+├── .env.local           # Environment variables (Firebase keys)
+├── tailwind.config.js   # Tailwind CSS configuration
+├── tsconfig.json        # TypeScript configuration
+└── vite.config.ts       # Vite bundler configuration
 ```
 
 ## 🚀 Getting Started
@@ -177,6 +181,6 @@ Follow these steps to run StudyWell locally on your machine.
 ---
 
 <p align="center">
-  <i>Built with ❤️ and a lot of caffeine..</i>
+  <i>Built with ❤️ and a lot of caffeine.</i>
 </p>
    
