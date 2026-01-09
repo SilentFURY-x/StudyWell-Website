@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { useAuthStore } from '@/store/useAuthStore';
+import LeaderboardPage from '@/features/leaderboard/LeaderboardPage';
 
 // Pages & Components
 import LoginPage from '@/features/auth/LoginPage';
@@ -52,7 +53,7 @@ function App() {
             <Route path="/timeline" element={<TimelinePage />} />
             
             <Route path="/timer" element={<div>Timer Coming Soon</div>} />
-            <Route path="/leaderboard" element={<div>Leaderboard Coming Soon</div>} />
+            <Route path="/leaderboard" element={<LeaderboardPage />} />
           </Route>
         ) : (
           <Route path="*" element={<Navigate to="/login" replace />} />
