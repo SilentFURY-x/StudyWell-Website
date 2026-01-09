@@ -82,16 +82,36 @@ Featuring a **drag-and-drop timeline**, **real-time focus timer**, and a **compe
 
 This project was built using the modern **T3-style** stack for maximum performance and scalability.
 
-| Category | Technologies |
-| :--- | :--- |
-| **Frontend** | React 18, TypeScript, Vite |
-| **Styling** | Tailwind CSS, Shadcn/UI, Lucide Icons |
-| **Animation** | Framer Motion, Canvas Confetti |
-| **State Management** | Zustand (Persisted Store) |
-| **Backend / Auth** | Firebase Auth, Cloud Firestore |
-| **Data Viz** | Recharts (Analytics), Hello Pangea DnD (Drag & Drop) |
+<div align="center">
+
+| **Frontend** | **Backend & Services** | **Tools & UI** |
+|:---:|:---:|:---:|
+| ![React](https://img.shields.io/badge/React_18-20232a?style=for-the-badge&logo=react&logoColor=61DAFB) | ![Firebase](https://img.shields.io/badge/Firebase-039BE5?style=for-the-badge&logo=Firebase&logoColor=white) | ![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white) |
+| ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white) | ![Firestore](https://img.shields.io/badge/Cloud_Firestore-FFCA28?style=for-the-badge&logo=firebase&logoColor=black) | ![Framer](https://img.shields.io/badge/Framer_Motion-0055FF?style=for-the-badge&logo=framer&logoColor=white) |
+| ![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white) | ![Auth](https://img.shields.io/badge/Firebase_Auth-FFCA28?style=for-the-badge&logo=firebase&logoColor=black) | ![Shadcn](https://img.shields.io/badge/Shadcn_UI-000000?style=for-the-badge&logo=shadcnui&logoColor=white) |
+
+</div>
 
 ---
+
+## 📂 Project Structure
+
+A quick look at the top-level files and directories you'll see in this project.
+
+```text
+StudyWell/
+├── src/
+│   ├── components/      # Reusable UI components (Buttons, Cards, Dialogs)
+│   ├── features/        # Feature-based modules (Dashboard, Timeline, Analytics)
+│   ├── hooks/           # Custom React hooks (useAuth, useTimer, useTimeline)
+│   ├── lib/             # Utilities and Firebase configuration
+│   ├── store/           # Global State Management (Zustand stores)
+│   ├── App.tsx          # Main application entry point
+│   └── main.tsx         # DOM rendering
+├── public/              # Static assets and icons
+├── .env                 # Environment variables (Firebase keys)
+└── tailwind.config.js   # Style configurations
+```
 
 ## 🚀 Getting Started
 
