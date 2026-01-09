@@ -57,3 +57,24 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* --- NEW: PILL SCROLLBARS --- */
+@layer utilities {
+  /* Chrome, Edge, and Safari */
+  ::-webkit-scrollbar {
+    width: 8px; /* Slightly wider for better usability */
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent; /* Floating effect */
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-zinc-300 dark:bg-zinc-700 rounded-full border-[2px] border-solid border-transparent bg-clip-content;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-zinc-400 dark:bg-zinc-600;
+  }
+}
