@@ -39,7 +39,6 @@ const Sidebar = () => {
   const navItems = [
     { name: "Dashboard", icon: LayoutDashboard, path: "/" },
     { name: "Timeline", icon: CalendarDays, path: "/timeline" },
-    { name: "Focus Timer", icon: Clock, path: "/timer" },
     { name: "Analytics", icon: BarChart3, path: "/analytics" },
     { name: "Leaderboard", icon: Trophy, path: "/leaderboard" },
   ];

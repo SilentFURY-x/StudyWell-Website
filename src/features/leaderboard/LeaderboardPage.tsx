@@ -42,19 +42,35 @@ export default function LeaderboardPage() {
   };
 
   const getRowStyle = (index: number, isMe: boolean) => {
-    const baseStyle = "flex items-center p-4 rounded-xl border transition-all duration-300";
+    const baseStyle = "flex items-center p-4 rounded-xl border transition-all duration-300 relative";
     
-    if (isMe) {
-        // Highlight logic for YOUR row
-        return cn(baseStyle, "bg-primary/5 border-primary/50 shadow-md scale-[1.02] ring-1 ring-primary");
+    let specificStyle = "";
+
+    // 1. Determine the Base Look (Rank-based Backgrounds)
+    if (index === 0) {
+        specificStyle = "bg-gradient-to-r from-yellow-50 to-white dark:from-yellow-900/20 dark:to-zinc-900 border-yellow-200 dark:border-yellow-800";
+    } else if (index === 1) {
+        specificStyle = "bg-gradient-to-r from-zinc-50 to-white dark:from-zinc-800/40 dark:to-zinc-900 border-zinc-200 dark:border-zinc-700";
+    } else if (index === 2) {
+        specificStyle = "bg-gradient-to-r from-orange-50 to-white dark:from-orange-900/20 dark:to-zinc-900 border-orange-200 dark:border-orange-800";
+    } else {
+        // Normal rows
+        specificStyle = "bg-white dark:bg-zinc-900 border-zinc-100 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700";
     }
 
-    // Top 3 Styling
-    if (index === 0) return cn(baseStyle, "bg-gradient-to-r from-yellow-50 to-white dark:from-yellow-900/20 dark:to-zinc-900 border-yellow-200 dark:border-yellow-800");
-    if (index === 1) return cn(baseStyle, "bg-gradient-to-r from-zinc-50 to-white dark:from-zinc-800/40 dark:to-zinc-900 border-zinc-200 dark:border-zinc-700");
-    if (index === 2) return cn(baseStyle, "bg-gradient-to-r from-orange-50 to-white dark:from-orange-900/20 dark:to-zinc-900 border-orange-200 dark:border-orange-800");
+    // 2. Add "Me" Highlighting (Overlaying Border/Shadow)
+    if (isMe) {
+      return cn(
+          baseStyle, 
+          specificStyle, 
+          // ✅ FIX: Use a specific bright color (Indigo) + Colored Shadow for the 'Glow'
+          "ring-2 ring-indigo-500 ring-offset-2 dark:ring-offset-zinc-950",
+          "shadow-[0_0_20px_rgba(99,102,241,0.3)]", 
+          "scale-[1.02] z-10"
+      );
+    }
 
-    return cn(baseStyle, "bg-white dark:bg-zinc-900 border-zinc-100 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700");
+    return cn(baseStyle, specificStyle);
   };
 
   return (
