@@ -55,26 +55,25 @@ Featuring a **drag-and-drop timeline**, **real-time focus timer**, and a **compe
 | <img src="docs/leaderboard.png" alt="Leaderboard" width="400"/> | <img src="docs/analytics.png" alt="Analytics" width="400"/> |
 | *Compete with friends for XP and glory* | *Visualize your weekly focus habits* |
 
-
 ---
 
 ## 🌟 Key Features
 
-### 🧠 **Smart Productivity**
-- **Drag & Drop Timeline:** Effortlessly plan your day by dragging subjects into hourly slots.
-- **Smart Notifications:** The app knows your schedule. If it's 6 PM and you planned Physics, it will ping you to start focusing.
-- **Integrated Focus Timer:** A seamless timer widget that adapts to your current subject's color theme.
+### 🧠 **Intelligent Productivity**
+- **🧩 Drag & Drop Timeline:** A tactile planning experience. Simply drag your subjects into hourly slots to construct your perfect day.
+- **🔔 Smart Assistant:** The app proactively checks your schedule. If you planned "Physics" at 6 PM, you'll get a smart notification prompting you to start.
+- **⏱️ Context-Aware Timer:** The Focus Timer automatically adapts its color theme to match your current subject (e.g., Red for Math, Blue for Science).
 
 ### 🎮 **Gamification Engine**
-- **XP System:** Earn Experience Points (XP) for every minute you focus.
-- **Leaderboards:** Real-time ranking system to compete against yourself and others.
-- **Streak Protection:** Daily login tracking with "Streak Celebration" animations to build habits.
+- **📈 XP & Leveling System:** Earn 10 XP for every minute of focus. Watch your rank grow from *Novice* to *Scholar* to *Grandmaster*.
+- **🏆 Global Leaderboards:** Real-time ranking system to compete against friends and the community.
+- **🔥 Streak Protection:** Daily login tracking with "Streak Celebration" confetti animations to help you build consistent habits.
 
 ### 🎨 **Premium UI/UX**
-- **Glassmorphism:** Modern, frosted-glass aesthetics using `backdrop-filter`.
-- **Dark Mode:** Fully responsive dark theme that automatically syncs with system preferences.
-- **Liquid Animations:** Powered by **Framer Motion** for butter-smooth page transitions and layout shifts.
-- **Pill Scrollbars:** Custom-styled scrollbars for a native app feel.
+- **💎 Glassmorphism:** A stunning UI using `backdrop-filter` blur effects, gradients, and translucency.
+- **🌗 Adaptive Dark Mode:** Fully responsive dark/light theme that syncs with system preferences or user toggle.
+- **🌊 Liquid Animations:** Powered by **Framer Motion** for butter-smooth page transitions, card hovers, and layout shifts.
+- **📊 Interactive Charts:** Beautiful data visualization using Recharts to track your productivity trends.
 
 ---
 
@@ -125,12 +124,12 @@ Follow these steps to run StudyWell locally on your machine.
 
 1. **Clone the repository**
    ```bash
-   git clone [https://github.com/SilentFURY-x/StudyWell.git](https://github.com/SilentFURY-x/StudyWell.git)
+   git clone https://github.com/SilentFURY-x/StudyWell.git
    cd StudyWell
    ```
 2. **Install dependencies**
    ```bash
-   git clone [https://github.com/SilentFURY-x/StudyWell.git](https://github.com/SilentFURY-x/StudyWell.git)
+   git clone https://github.com/SilentFURY-x/StudyWell.git
    cd StudyWell
    ```
 3. **Configure Environment Variables Create a .env file in the root directory and add your Firebase config:**
