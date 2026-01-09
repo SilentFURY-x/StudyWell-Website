@@ -8,7 +8,8 @@ import {
   LogOut, 
   Flame,
   Clock,
-  Star 
+  Star, 
+  BarChart3
 } from "lucide-react";
 import { auth } from "@/lib/firebase";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -22,8 +23,8 @@ const Sidebar = () => {
   const navItems = [
     { name: "Dashboard", icon: LayoutDashboard, path: "/" },
     { name: "Timeline", icon: CalendarDays, path: "/timeline" },
-    { name: "Focus Timer", icon: Clock, path: "/timer" },
     { name: "Leaderboard", icon: Trophy, path: "/leaderboard" },
+    { name: "Analytics", icon: BarChart3, path: "/analytics" },
   ];
 
   return (

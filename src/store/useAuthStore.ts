@@ -9,7 +9,7 @@ import {
   serverTimestamp 
 } from 'firebase/firestore'; 
 import { db } from '@/lib/firebase';
-import { differenceInCalendarDays } from 'date-fns'; // Make sure to install date-fns if missing
+import { differenceInCalendarDays } from 'date-fns'; 
 
 interface UserData {
   xp: number;
@@ -21,12 +21,13 @@ interface UserData {
 
 interface AuthState {
   user: User | null;
-  userData: UserData | null; // ✅ New: Holds the DB data (XP, Streak)
+  userData: UserData | null; 
   isLoading: boolean;
   setUser: (user: User | null) => void;
   setLoading: (isLoading: boolean) => void;
   syncUser: (user: User) => Promise<void>;
   updateUserStats: (seconds: number) => Promise<void>;
+  logout: () => void; // Added logout helper
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
@@ -36,12 +37,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   setUser: (user) => set({ user }),
   setLoading: (isLoading) => set({ isLoading }),
   
+  logout: () => set({ user: null, userData: null }),
+
   syncUser: async (user: User) => {
     const userRef = doc(db, "users", user.uid);
     const userSnap = await getDoc(userRef);
 
     if (!userSnap.exists()) {
-      // New User
       const newData = {
         uid: user.uid,
         email: user.email,
@@ -55,9 +57,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         createdAt: serverTimestamp(),
       };
       await setDoc(userRef, newData);
-      set({ userData: newData as any }); // Save to store
+      set({ userData: newData as any }); 
     } else {
-      // Returning User: Calculate Streak
       const data = userSnap.data();
       const lastLoginDate = data.lastLogin?.toDate();
       const today = new Date();
@@ -66,15 +67,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
       if (lastLoginDate) {
         const daysDiff = differenceInCalendarDays(today, lastLoginDate);
-        
-        if (daysDiff === 1) {
-            // Logged in yesterday? Increment!
-            newStreak += 1;
-        } else if (daysDiff > 1) {
-            // Missed a day? Reset.
-            newStreak = 1;
-        }
-        // If daysDiff === 0 (same day), do nothing.
+        if (daysDiff === 1) newStreak += 1;
+        else if (daysDiff > 1) newStreak = 1;
       }
 
       await updateDoc(userRef, { 
@@ -84,7 +78,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         photoURL: user.photoURL
       });
       
-      // Update local state so UI shows it immediately
       set({ userData: { ...data, streak: newStreak } as any });
     }
   },
@@ -95,10 +88,15 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
     const minutes = Math.floor(seconds / 60);
     const xpEarned = minutes * 10; 
+    
+    // YYYY-MM-DD string for the document ID
+    const todayStr = new Date().toISOString().split('T')[0]; 
 
     const userRef = doc(db, "users", user.uid);
+    const dailyStatRef = doc(db, "users", user.uid, "stats", todayStr);
 
     try {
+      // 1. Global Stats
       await updateDoc(userRef, {
         xp: increment(xpEarned),
         points: increment(xpEarned),
@@ -106,7 +104,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         lastActive: serverTimestamp()
       });
 
-      // Update local state instantly
+      // 2. ✅ NEW: Daily Stats (For the Chart)
+      // We use setDoc with merge:true so it creates it if it doesn't exist, or updates it if it does.
+      await setDoc(dailyStatRef, {
+        date: todayStr,
+        minutes: increment(minutes),
+        xp: increment(xpEarned)
+      }, { merge: true });
+
       if (userData) {
         set({
             userData: {

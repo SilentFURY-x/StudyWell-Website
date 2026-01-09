@@ -4,6 +4,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { useAuthStore } from '@/store/useAuthStore';
 import LeaderboardPage from '@/features/leaderboard/LeaderboardPage';
+import AnalyticsPage from '@/features/analytics/AnalyticsPage';
 
 // Pages & Components
 import LoginPage from '@/features/auth/LoginPage';
@@ -53,6 +54,7 @@ function App() {
             <Route path="/timeline" element={<TimelinePage />} />
             
             <Route path="/timer" element={<div>Timer Coming Soon</div>} />
+            <Route path="/analytics" element={<AnalyticsPage />} />
             <Route path="/leaderboard" element={<LeaderboardPage />} />
           </Route>
         ) : (
