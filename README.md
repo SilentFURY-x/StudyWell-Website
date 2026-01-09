@@ -55,6 +55,11 @@ Featuring a **drag-and-drop timeline**, **real-time focus timer**, and a **compe
 | <img src="docs/leaderboard.png" alt="Leaderboard" width="400"/> | <img src="docs/analytics.png" alt="Analytics" width="400"/> |
 | *Compete with friends for XP and glory* | *Visualize your weekly focus habits* |
 
+| **Streak Pop-up** | **Subject Reminder** |
+|:---:|:---:|
+| <img src="docs/streak.png" alt="Streak Message" width="400"/> | <img src="docs/reminder.png" alt="Reminder Notification" width="400"/> |
+| *Show your Consistency* | *Never miss a study session* |
+
 ---
 
 ## 🌟 Key Features
