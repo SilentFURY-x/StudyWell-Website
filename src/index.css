@@ -3,6 +3,11 @@
 @tailwind utilities;
 
 @layer base {
+  @media (pointer: fine) {
+    body, a, button, input, [role="button"] {
+      cursor: none !important;
+    }
+  }
   :root {
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;

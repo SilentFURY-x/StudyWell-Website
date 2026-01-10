@@ -4,6 +4,7 @@ import { AnimatePresence } from "framer-motion";
 import PageTransition from "./PageTransition"; 
 import SmartNotification from "@/components/ui/smart-notification"; 
 import { useStudyNotifications } from "@/hooks/useStudyNotifications"; 
+import CustomCursor from "@/components/ui/CustomCursor";
 
 const AppLayout = () => {
   const location = useLocation(); 
@@ -15,6 +16,8 @@ const AppLayout = () => {
   return (
     <div className="flex h-screen w-full bg-zinc-50 dark:bg-zinc-900">
       
+      <CustomCursor />
+
       {/* ✅ Pass the full session object to the notification */}
       {/* It handles its own visibility based on whether session is null or not */}
       <SmartNotification 
