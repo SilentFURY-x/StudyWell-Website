@@ -10,9 +10,10 @@ import AnalyticsPage from '@/features/analytics/AnalyticsPage';
 import LoginPage from '@/features/auth/LoginPage';
 import AppLayout from '@/components/layout/AppLayout';
 import Dashboard from '@/features/dashboard/Dashboard';
+import TimelinePage from '@/features/timeline/TimelinePage';
 
-// --- CHANGE 1: Import the new Timeline Page ---
-import TimelinePage from '@/features/timeline/TimelinePage'; 
+// --- CHANGE 1: Import the Cursor here ---
+import CustomCursor from '@/components/ui/CustomCursor';
 
 function App() {
   const { user, setUser, isLoading, setLoading, syncUser } = useAuthStore();
@@ -40,6 +41,11 @@ function App() {
 
   return (
     <BrowserRouter>
+      {/* --- CHANGE 2: Mount the cursor here. 
+          It is now a sibling to Routes, so it floats above EVERYTHING (Login & Dashboard). 
+      --- */}
+      <CustomCursor />
+
       <Routes>
         <Route 
           path="/login" 
@@ -49,10 +55,7 @@ function App() {
         {user ? (
           <Route element={<AppLayout />}>
             <Route path="/" element={<Dashboard />} />
-            
-            {/* --- CHANGE 2: Use the real component here --- */}
             <Route path="/timeline" element={<TimelinePage />} />
-            
             <Route path="/timer" element={<div>Timer Coming Soon</div>} />
             <Route path="/analytics" element={<AnalyticsPage />} />
             <Route path="/leaderboard" element={<LeaderboardPage />} />
